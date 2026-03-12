@@ -4,10 +4,8 @@ import { QRCodeSVG } from 'qrcode.react'
 import { MessageCircle, Send, Mail, User, Sparkles } from 'lucide-react'
 
 export default function Home() {
-  // The deployed URL - will be updated after deployment
-  const websiteUrl = typeof window !== 'undefined' 
-    ? window.location.href 
-    : 'https://peter-nikolaev.vercel.app'
+  // The deployed URL
+  const websiteUrl = 'https://contact-card-beige.vercel.app'
 
   const contactLinks = [
     {
