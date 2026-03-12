@@ -1,42 +1,30 @@
 'use client'
 
 import { QRCodeSVG } from 'qrcode.react'
-import { MessageCircle, Send, Mail, Sparkles, Wallet } from 'lucide-react'
+import { MessageCircle, Send, Mail, Sparkles, Wallet, Download, Smartphone } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 
 export default function Home() {
-  // The deployed URL
   const websiteUrl = 'https://contact-card-beige.vercel.app'
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://contact-card-api.up.railway.app'
-  
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleAddToGoogleWallet = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch(`${apiUrl}/api/wallet/google`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      
-      const data = await response.json()
-      
-      if (data.success && data.saveUrl) {
-        // Redirect to Google Wallet save URL
-        window.location.href = data.saveUrl
-      } else {
-        console.error('Failed to generate pass:', data.error)
-        alert('Failed to generate Google Wallet pass. Please try again.')
-      }
-    } catch (error) {
-      console.error('Error adding to Google Wallet:', error)
-      alert('Error connecting to wallet service. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
+  // Download vCard - works on ALL phones (iPhone, Android, etc.)
+  const handleSaveContact = () => {
+    const vcardUrl = '/contact.vcf'
+    const link = document.createElement('a')
+    link.href = vcardUrl
+    link.download = 'Peter_Nikolaev.vcf'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Simple Google Wallet link (JWT approach without backend)
+  const handleAddToGoogleWallet = () => {
+    // For now, direct users to save the contact via vCard
+    // Full Google Wallet integration requires backend + Google Cloud setup
+    alert('Please use "Save Contact" button below to add to your phone\'s wallet. Google Wallet integration coming soon!')
   }
 
   const contactLinks = [
@@ -67,10 +55,10 @@ export default function Home() {
   ]
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <main className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-900 via-gray-900 to-black">
       <div className="w-full max-w-md">
         {/* Card Container */}
-        <div className="bg-dark-card border border-dark-border rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-3xl shadow-2xl overflow-hidden">
           {/* Header with gradient */}
           <div className="h-24 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 relative">
             <div className="absolute inset-0 bg-black/20" />
@@ -80,7 +68,7 @@ export default function Home() {
           <div className="px-6 pb-6">
             {/* Avatar */}
             <div className="relative -mt-12 mb-4 flex justify-center">
-              <div className="w-24 h-24 rounded-full bg-dark border-4 border-dark-card shadow-xl overflow-hidden">
+              <div className="w-24 h-24 rounded-full bg-gray-900 border-4 border-gray-800 shadow-xl overflow-hidden">
                 <Image
                   src="/avatar.png"
                   alt="Peter Nikolaev"
@@ -100,7 +88,7 @@ export default function Home() {
               <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
                 Peter Nikolaev
               </h1>
-              <p className="text-gradient text-sm sm:text-base font-medium">
+              <p className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 text-sm sm:text-base font-medium">
                 AI Consultant / Developer
               </p>
             </div>
@@ -145,27 +133,26 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Google Wallet Button */}
+            {/* Save Contact Button (vCard - Works on ALL phones) */}
             <button
-              onClick={handleAddToGoogleWallet}
-              disabled={isLoading}
-              className="flex items-center gap-4 w-full p-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] border border-gray-700 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSaveContact}
+              className="flex items-center gap-4 w-full p-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] mt-4"
             >
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-white" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <Download className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 text-left">
                 <p className="text-white/80 text-xs font-medium uppercase tracking-wider">
-                  Save to Phone
+                  Universal
                 </p>
                 <p className="text-white font-semibold text-sm sm:text-base">
-                  {isLoading ? 'Generating...' : 'Add to Google Wallet'}
+                  Save Contact (iPhone & Android)
                 </p>
               </div>
             </button>
 
             {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-dark-border text-center">
+            <div className="mt-6 pt-4 border-t border-gray-700 text-center">
               <p className="text-gray-500 text-xs">
                 Tap any button to connect
               </p>
