@@ -1,12 +1,43 @@
 'use client'
 
 import { QRCodeSVG } from 'qrcode.react'
-import { MessageCircle, Send, Mail, Sparkles } from 'lucide-react'
+import { MessageCircle, Send, Mail, Sparkles, Wallet } from 'lucide-react'
 import Image from 'next/image'
+import { useState } from 'react'
 
 export default function Home() {
   // The deployed URL
   const websiteUrl = 'https://contact-card-beige.vercel.app'
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://contact-card-api.up.railway.app'
+  
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleAddToGoogleWallet = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${apiUrl}/api/wallet/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      const data = await response.json()
+      
+      if (data.success && data.saveUrl) {
+        // Redirect to Google Wallet save URL
+        window.location.href = data.saveUrl
+      } else {
+        console.error('Failed to generate pass:', data.error)
+        alert('Failed to generate Google Wallet pass. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error adding to Google Wallet:', error)
+      alert('Error connecting to wallet service. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const contactLinks = [
     {
@@ -113,6 +144,25 @@ export default function Home() {
                 </a>
               ))}
             </div>
+
+            {/* Google Wallet Button */}
+            <button
+              onClick={handleAddToGoogleWallet}
+              disabled={isLoading}
+              className="flex items-center gap-4 w-full p-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] border border-gray-700 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-white/80 text-xs font-medium uppercase tracking-wider">
+                  Save to Phone
+                </p>
+                <p className="text-white font-semibold text-sm sm:text-base">
+                  {isLoading ? 'Generating...' : 'Add to Google Wallet'}
+                </p>
+              </div>
+            </button>
 
             {/* Footer */}
             <div className="mt-6 pt-4 border-t border-dark-border text-center">
