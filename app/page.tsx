@@ -1,7 +1,8 @@
 'use client'
 
 import { QRCodeSVG } from 'qrcode.react'
-import { MessageCircle, Send, Mail, User, Sparkles } from 'lucide-react'
+import { MessageCircle, Send, Mail, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Home() {
   // The deployed URL
@@ -48,8 +49,15 @@ export default function Home() {
           <div className="px-6 pb-6">
             {/* Avatar */}
             <div className="relative -mt-12 mb-4 flex justify-center">
-              <div className="w-24 h-24 rounded-full bg-dark border-4 border-dark-card flex items-center justify-center shadow-xl">
-                <User className="w-12 h-12 text-gray-400" />
+              <div className="w-24 h-24 rounded-full bg-dark border-4 border-dark-card shadow-xl overflow-hidden">
+                <Image
+                  src="/avatar.png"
+                  alt="Peter Nikolaev"
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full p-1.5">
                 <Sparkles className="w-4 h-4 text-white" />
