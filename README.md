@@ -2,6 +2,8 @@
 
 Digital contact card for Peter Nikolaev with Google Wallet pass support.
 
+**Live Site:** https://contact-card-beige.vercel.app
+
 ## Features
 
 - 📱 Digital contact card with QR code
@@ -10,135 +12,126 @@ Digital contact card for Peter Nikolaev with Google Wallet pass support.
 - 🎫 Google Wallet pass generation
 - 📲 Save contact directly to phone
 
+## Quick Start
+
+### Frontend Only (No Wallet)
+The frontend works immediately and can be deployed to Vercel:
+
+```bash
+npm install
+npm run build
+vercel --prod
+```
+
+### Full Setup (With Google Wallet)
+
+#### 1. Deploy Backend API (Railway)
+
+**Option A: Railway CLI**
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login and deploy
+cd api
+railway login
+railway init
+railway up
+```
+
+**Option B: Railway Dashboard (Easiest)**
+1. Push this repo to GitHub
+2. Go to [railway.app](https://railway.app)
+3. Click "New Project" → "Deploy from GitHub"
+4. Select your repository
+5. Set the root directory to `api`
+6. Add environment variables (see below)
+7. Deploy!
+
+#### 2. Set Environment Variables on Railway
+
+```bash
+GOOGLE_WALLET_ISSUER_ID=your-issuer-id
+GOOGLE_WALLET_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
+```
+
+#### 3. Update Frontend API URL
+
+Create `.env.local` in the project root:
+```bash
+NEXT_PUBLIC_API_URL=https://your-app.up.railway.app
+```
+
+Then redeploy the frontend.
+
 ## Google Wallet Setup
 
-To enable Google Wallet pass generation, follow these steps:
-
-### 1. Create a Google Cloud Project
+### 1. Create Google Cloud Project
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Click "Select a project" → "New Project"
-3. Name your project (e.g., "contact-card-wallet")
-4. Click "Create"
+2. Create a new project named "contact-card-wallet"
+3. Enable the **Google Wallet API** (APIs & Services → Library)
 
-### 2. Enable Google Wallet API
-
-1. In your project, go to "APIs & Services" → "Library"
-2. Search for "Google Wallet API"
-3. Click "Enable"
-
-### 3. Create a Service Account
+### 2. Create Service Account
 
 1. Go to "IAM & Admin" → "Service Accounts"
 2. Click "Create Service Account"
 3. Name: `wallet-issuer`
-4. Click "Create and Continue"
-5. Grant role: `Wallet Object Issuer`
-6. Click "Continue" → "Done"
+4. Grant role: **Wallet Object Issuer**
+5. Go to the service account → "Keys" tab
+6. "Add Key" → "Create New Key" → JSON
+7. Save the downloaded JSON file securely
 
-### 4. Generate Service Account Key
-
-1. Click on the service account you just created
-2. Go to the "Keys" tab
-3. Click "Add Key" → "Create New Key"
-4. Select "JSON" format
-5. Click "Create" - the key file will download automatically
-
-### 5. Get Your Issuer ID
+### 3. Get Your Issuer ID
 
 1. Go to [Google Pay & Wallet Console](https://pay.google.com/business/console)
 2. Sign in with your Google account
-3. Go to "Settings" → "Business Profile"
-4. Your **Issuer ID** will be displayed at the top
+3. Go to "Settings"
+4. Copy your **Issuer ID**
 
-### 6. Configure Environment Variables
+### 4. Configure Environment Variables
 
-1. Copy the example environment file:
-   ```bash
-   cp api/.env.example api/.env
-   ```
-
-2. Edit `api/.env` and add your credentials:
-   ```bash
-   # Replace with your Issuer ID
-   GOOGLE_WALLET_ISSUER_ID=your-issuer-id-here
-   
-   # Replace with your service account JSON key
-   GOOGLE_WALLET_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
-   ```
-
-   To convert your JSON key to a single line:
-   ```bash
-   export GOOGLE_WALLET_SERVICE_ACCOUNT_KEY=$(cat your-service-account-key.json | jq -c .)
-   ```
-
-### 7. Create the Pass Class
-
-The first time you run the API, it will automatically create the pass class (template). You can also create it manually via the API.
-
-## Development
-
-### Frontend (Next.js)
-
+Convert your JSON key to a single line:
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
+export GOOGLE_WALLET_SERVICE_ACCOUNT_KEY=$(cat service-account-key.json | jq -c .)
 ```
 
-### Backend API (Express)
+Add to Railway dashboard:
+- `GOOGLE_WALLET_ISSUER_ID`: Your issuer ID
+- `GOOGLE_WALLET_SERVICE_ACCOUNT_KEY`: The JSON string
 
-```bash
-# Navigate to API folder
-cd api
+## Project Structure
 
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
 ```
-
-## Deployment
-
-### Backend API (Railway)
-
-1. Push your code to GitHub
-2. Go to [Railway](https://railway.app/) and create a new project
-3. Select "Deploy from GitHub repo"
-4. Select your repository
-5. Add environment variables in Railway dashboard:
-   - `GOOGLE_WALLET_ISSUER_ID`
-   - `GOOGLE_WALLET_SERVICE_ACCOUNT_KEY`
-6. Deploy!
-
-Your API will be available at: `https://your-app.up.railway.app`
-
-### Frontend (Vercel)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel --prod
+contact-card/
+├── app/                    # Next.js frontend
+│   ├── page.tsx           # Main contact card page
+│   ├── layout.tsx
+│   └── globals.css
+├── api/                    # Express backend (deploy separately)
+│   ├── index.ts           # Server entry
+│   ├── wallet.ts          # Google Wallet integration
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── railway.toml       # Railway config
+│   ├── Procfile           # Render/Heroku config
+│   └── .env.example       # Environment template
+├── components/            # React components
+├── public/               # Static assets (avatar.png)
+├── .env.local.example    # Frontend env template
+└── README.md
 ```
-
-Or connect your GitHub repo to Vercel for automatic deployments.
 
 ## API Endpoints
 
 ### POST `/api/wallet/google`
 
 Generate a Google Wallet pass.
+
+**Request:**
+```bash
+curl -X POST https://your-api.com/api/wallet/google
+```
 
 **Response:**
 ```json
@@ -149,12 +142,38 @@ Generate a Google Wallet pass.
 }
 ```
 
+## Development
+
+### Frontend
+```bash
+npm install
+npm run dev          # http://localhost:3000
+```
+
+### Backend
+```bash
+cd api
+npm install
+npm run dev          # http://localhost:3001
+```
+
+## Deployment Checklist
+
+- [ ] Push code to GitHub
+- [ ] Deploy API to Railway/Render
+- [ ] Add environment variables to Railway
+- [ ] Copy API URL
+- [ ] Create `.env.local` with `NEXT_PUBLIC_API_URL`
+- [ ] Deploy frontend to Vercel
+- [ ] Test Google Wallet button
+
 ## Technologies
 
 - **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
 - **Backend:** Express.js, TypeScript
 - **Wallet:** Google Wallet API
-- **Hosting:** Vercel (frontend), Railway (backend)
+- **Icons:** Lucide React
+- **QR:** qrcode.react
 
 ## Contact
 

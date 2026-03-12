@@ -1,0 +1,13 @@
+# Exclude API folder from Vercel build (it's deployed separately)
+api/
+
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.local
+
+# Next.js build output
+.next/
+dist/
