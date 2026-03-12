@@ -12,8 +12,8 @@ export default function Home() {
   const contactLinks = [
     {
       name: 'WhatsApp',
-      handle: '+62 811-3977-775',
-      href: 'https://wa.me/628113977775',
+      handle: '+971 54 281 6719',
+      href: 'https://wa.me/971542816719',
       icon: MessageCircle,
       color: 'from-green-500 to-emerald-600',
       hoverColor: 'hover:from-green-400 hover:to-emerald-500',
@@ -28,8 +28,8 @@ export default function Home() {
     },
     {
       name: 'Email',
-      handle: 'peter@fillrr.com',
-      href: 'mailto:peter@fillrr.com',
+      handle: 'pn@getsome.llc',
+      href: 'mailto:pn@getsome.llc',
       icon: Mail,
       color: 'from-indigo-500 to-purple-600',
       hoverColor: 'hover:from-indigo-400 hover:to-purple-500',
